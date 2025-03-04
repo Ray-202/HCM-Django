@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block title %}Chatbot Interface{% endblock %}
+
+{% block extra_css %}
+<style>
+  .chat-container {
+    max-width: 1500px; /* Increased width */
+    margin: 60px auto;
+    display: flex;
+    flex-direction: column;
+    background-color: #FFFFFF;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.card-header {
+    background-color: #3F8158;
+    color: white;
+    padding: 15px;
+    font-size: 20px;
+    font-weight: bold;
+    border-radius: 5px 5px 0 0;
+}
+
+.messages-box {
+    background-color: #F5FCF6;
+    border-radius: 5px;
+    padding: 15px;
+    height: 500px; /* Increased height */
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.messages-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+.message-content {
+  white-space: pre-wrap; /* <--- Add this line */
+  word-wrap: break-word; /* <--- And this line */
+}
+
+.message {
+    margin-bottom: 25px;
+    display: flex;
+    align-items: flex-start;
+    max-width: 100%;
+    margin-bottom: 10px;
+}
+
+.message.received {
+    justify-content: flex-start; /* AI messages on the left */
+}
+
+.message.sent {
+  justify-content: flex-end;
+  align-self: flex-end;
+}
+
+.message-text {
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 16px;
+}
+
+.message.received .message-text {
+    background-color: #3F8158;
+    color: white;
+    border-radius: 10px 10px 10px 0;
+    max-width: 50%;
+    width: auto;
+    text-align: right;
+    direction: rtl;
+    padding: 8px 12px;
+}
+
+.message.sent .message-text {
+  background-color: #F2F0EF;
+  color: #000000;
+  border-radius: 10px 10px 0 10px;
+  text-align: right;
+  max-width: 60%;
+  align-self: flex-end; /* Push the bubble to the right */
+}
+
+.message-sender {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.message-form {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    gap: 15px; 
+}
+
+.message-input {
+    flex: none; 
+    width: 75%; 
+    padding: 12px; 
+    border-radius: 5px;
+    background-color: #E8E9EB;
+    border: none;
+}
+
+.btn-send {
+    background-color: #3F8158;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-send:hover {
+    background-color: #2E5E41;
+}
+
+
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="chat-container">
+  <div class="card flex-grow-1">
+    <div class="card-header">Chat</div>
+    <div class="card-body messages-box">
+      <ul class="list-unstyled messages-list" id="messages">
+        <!-- Example messages -->
+        <li class="message received">
+          <div class="message-text">
+            <div class="message-sender"><b>AI Chatbot</b></div>
+            <div class="message-content">
+              أهلًا! كيف يمكنني مساعدتك ؟ 
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <form class="message-form" id="message-form">
+    {% csrf_token %}
+    <input type="text" id="message-input" class="message-input" placeholder="Type your message...">
+    <button type="submit" class="btn btn-send">Send</button>
+</form>
+</div>
+
+<script>
+  document.getElementById('message-form').addEventListener('submit', async function(event) {
+    event.preventDefault();
+    const messageInput = document.getElementById('message-input');
+    const userMessage = messageInput.value.trim();
+
+    if (!userMessage) return;
+
+    // Display user message
+    const messagesList = document.getElementById('messages');
+    const userBubble = document.createElement('li');
+    userBubble.className = 'message sent';
+    userBubble.innerHTML = `<div class="message-text">${userMessage}</div>`;
+    messagesList.appendChild(userBubble);
+    messageInput.value = '';
+
+    // Fetch chatbot response
+    try {
+      const response = await fetch(`/chatbot/?query=${encodeURIComponent(userMessage)}`);
+      const data = await response.json();
+
+      if (data.answer) {
+        const botBubble = document.createElement('li');
+        botBubble.className = 'message received';
+        botBubble.innerHTML = `
+          <div class="message-text">
+            <div class="message-sender"><b>AI Chatbot</b></div>
+            <div class="message-content">${data.answer}</div>
+          </div>`;
+        messagesList.appendChild(botBubble);
+      }
+    } catch (error) {
+      console.error('Error fetching chatbot response:', error);
+    }
+
+    // Scroll to the bottom of the chat
+    messagesList.scrollTop = messagesList.scrollHeight;
+  });
+</script>
+{% endblock %}

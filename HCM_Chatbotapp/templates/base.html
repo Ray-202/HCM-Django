@@ -1,0 +1,82 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Chatbot{% endblock %}</title>
+    <style>
+      body {
+          margin: 0;
+          font-family: Arial, sans-serif;
+          background-color: #F5FCF6;
+      }
+      nav {
+          background-color: white;
+          padding: 20px 20px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+          height: 60px; #increased hight of NavBar
+      }
+      nav img {
+          height: 70px; # increased height of logo img
+      }
+      nav .title {
+          font-size: 26px; #increase font size
+          font-weight: bold;
+          color: #3F8158;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+      }
+      .nav-link {
+          font-size: 18px; #increase font size
+          color: #3F8158;
+          text-decoration: none;
+          position: relative;
+          top: 4px; 
+      }
+      .nav-link:hover {
+          text-decoration: underline;
+      }
+      footer {
+          text-align: center;
+          padding: 10px;
+          background-color: #F2F0EF;
+          position: fixed;
+          width: 100%;
+          bottom: 0;
+      }
+  </style>
+  
+
+  
+  
+    {% block extra_css %}
+    {% endblock %}
+</head>
+<body>
+    <nav>
+      <div class="title">Human Capital Chatbot
+        <a href="https://kacst.gov.sa/" target="_blank" class="nav-link">KACST</a>
+      </div>
+      
+      <img src="{% static 'images/kacst.png' %}" alt="Logo">
+
+    </nav>
+
+    <div>
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <footer>
+        © 2025 KACST Human Capital Chatbot
+    </footer>
+
+    {% block extra_js %}
+    {% endblock %}
+</body>
+</html>
