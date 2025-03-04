@@ -1,0 +1,19 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+env/
+
+# Django-specific files
+*.log
+
+/staticfiles/
+
+# Environment variables (if stored in a file)
+.env
+
+# macOS specific files
+.DS_Store
